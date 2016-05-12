@@ -1,0 +1,16 @@
+(+ 40 2)
+
+(def a-value "IKR!")
+
+(defn task [n]
+  {:new "thing"
+   :other "thing"})
+
+"hello"
+
+(defn task [n]
+  (println) "what's going on here?")
+
+(def main-data {})
+
+(map #(println %) (seq main-data))
