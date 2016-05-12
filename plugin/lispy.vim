@@ -5,6 +5,19 @@
 
 " TODO list balancing
 "   - TODO checking whole project is balanced
+" Overrides my => binding. problem?
+" Paredit is 1753 lines long
+
+" Match delimiter this number of lines before and after cursor position
+
+let g:paredit_mode = 1
+
+if !exists( 'g:paredit_matchlines' )
+    let g:paredit_matchlines = 100
+endif
+
+" Skip matches inside string or comment or after '\'
+let s:skip_sc = '(synIDattr(synID(line("."), col("."), 0), "name") =~ "[Ss]tring\\|[Cc]omment\\|[Ss]pecial\\|clojureRegexp\\|clojurePattern" || getline(line("."))[col(".")-2] == "\\")'
 
 function! LispyInitBuffer ()
     let b:paredit_init = 1
@@ -28,17 +41,21 @@ function! LispyInitBuffer ()
         let b:any_wsclose_char   = '\s\|)'
     endif
 
+    " -- Keybindings
+    " Implicit Editing behaviour
     inoremap <buffer> <expr>   (            PareditInsertOpening('(',')')
     inoremap <buffer> <expr>   {            PareditInsertOpening('{','}')
     inoremap <buffer> <expr>   [            PareditInsertOpening('[',']')
     inoremap <buffer> <expr>   "            PareditInsertOpening('"','"')
+    inoremap <buffer> <expr>   <BS>         PareditBackspace(0)
+    " Handy cursor movements
     inoremap <C-f>        <C-o>l
     inoremap <C-b>        <C-o>h
-    " Overrides my => binding. problem?
     " F( should be replaced with a backward search for any open/closing list
-    " symbol (/{/[/]/}/)
+    " F[...
+    inoremap <C-d>        <C-o>x
     inoremap <C-k>        <C-o>F(<BS><CR><C-o>%
-    " noremap <BS> RainbowParenthesis!!
+    noremap <BS> RainbowParenthesis!!
     " inoremap <C-F>        <C-o>k " slurp/barfing
     " splicing achieved with ds(/dsb
     " wrap entire line with yssb
@@ -47,12 +64,16 @@ endfunction
 " Valid macro prefix characters
 let s:any_macro_prefix   = "'" . '\|`\|#\|@\|\~\|,\|\^'
 
+" === Handy Macros -------------------------------------------------------------------
+
 function! LispyNextLineSplit()
     let start_line = getline( '.' )
     let start_column = col( '.' ) - 1
     " Move to cut point
     let cut_column = col( '.' ) - 1
 endfunction
+
+" === Implicit Editing behaviour -----------------------------------------------------
 
 " Insert opening type of a paired character, like ( or [.
 function! PareditInsertOpening( open, close )
@@ -75,4 +96,113 @@ function! PareditInsertOpening( open, close )
         let retval = " " . retval
     endif
     return retval
+endfunction
+
+" Handle <BS> keypress
+function! PareditBackspace( repl_mode )
+    " let [lp, cp] = s:GetReplPromptPos()
+    " if a:repl_mode && line( "." ) == lp && col( "." ) <= cp
+    "     " No BS allowed before the previous EOF mark in the REPL
+    "     " i.e. don't delete Lisp prompt
+    "     return ""
+    " endif
+
+    if !g:paredit_mode " || s:InsideComment()
+        return "\<BS>"
+    endif
+
+    let line = getline( '.' )
+    let pos = col( '.' ) - 1
+
+    if pos == 0
+        " We are at the beginning of the line
+        return "\<BS>"
+    elseif s:InsideString() && line[pos-1] =~ b:any_openclose_char
+        " Deleting a paren inside a string
+        return "\<BS>"
+    elseif pos > 1 && line[pos-1] =~ b:any_matched_char && line[pos-2] == '\' && (pos < 3 || line[pos-3] != '\')
+        " Deleting an escaped matched character
+        return "\<BS>\<BS>"
+    elseif line[pos-1] !~ b:any_matched_char
+        " Deleting a non-special character
+        return "\<BS>"
+    elseif line[pos-1] != '"' && !s:IsBalanced()
+        " Current top-form is unbalanced, can't retain paredit mode
+        return "\<BS>"
+    endif
+
+    if line[pos-1:pos] =~ b:any_matched_pair
+        " Deleting an empty character-pair
+        return "\<Right>\<BS>\<BS>"
+    else
+        " Character-pair is not empty, don't delete just move inside
+        return "\<Left>"
+    endif
+endfunction
+
+" === Composable functions
+
+" Does the current syntax item match the given regular expression?
+function! s:SynIDMatch( regexp, line, col, match_eol )
+    let col  = a:col
+    if a:match_eol && col > len( getline( a:line ) )
+        let col = col - 1
+    endif
+    return synIDattr( synID( a:line, col, 0), 'name' ) =~ a:regexp
+endfunction
+
+" Is the current cursor position inside a string?
+function! s:InsideString( ... )
+    let l = a:0 ? a:1 : line('.')
+    let c = a:0 ? a:2 : col('.')
+    if &syntax == ''
+        " No help from syntax engine,
+        " count quote characters up to the cursor position
+        let line = strpart( getline(l), 0, c - 1 )
+        let line = substitute( line, '\\"', '', 'g' )
+        let quotes = substitute( line, '[^"]', '', 'g' )
+        return len(quotes) % 2
+    endif
+    " VimClojure and vim-clojure-static define special syntax for regexps
+    return s:SynIDMatch( '[Ss]tring\|clojureRegexp\|clojurePattern', l, c, 0 )
+endfunction
+
+" Is the current top level form balanced, i.e all opening delimiters
+" have a matching closing delimiter
+function! s:IsBalanced()
+    let l = line( '.' )
+    let c =  col( '.' )
+    let line = getline( '.' )
+    if c > len(line)
+        let c = len(line)
+    endif
+    let matchb = max( [l-g:paredit_matchlines, 1] )
+    let matchf = min( [l+g:paredit_matchlines, line('$')] )
+    " let [prompt, cp] = s:GetReplPromptPos()
+    " if s:IsReplBuffer() && l >= prompt && matchb < prompt
+    "     " Do not go before the last command prompt in the REPL buffer
+    "     let matchb = prompt
+    " endif
+    let p1 = searchpair( '(', '', ')', 'brnmW', s:skip_sc)
+    let p2 = searchpair( '(', '', ')',  'rnmW', s:skip_sc)
+    if !(p1 == p2) && !(p1 == p2 - 1 && line[c-1] == '(') && !(p1 == p2 + 1 && line[c-1] == ')')
+        " Number of opening and closing parens differ
+        return 0
+    endif
+
+    if &ft =~ '.*\(clojure\|scheme\|racket\).*'
+        let b1 = searchpair( '\[', '', '\]', 'brnmW', s:skip_sc)
+        let b2 = searchpair( '\[', '', '\]',  'rnmW', s:skip_sc)
+        if !(b1 == b2) && !(b1 == b2 - 1 && line[c-1] == '[') && !(b1 == b2 + 1 && line[c-1] == ']')
+            " Number of opening and closing brackets differ
+            return 0
+        endif
+        let b1 = searchpair( '{', '', '}', 'brnmW', s:skip_sc)
+        let b2 = searchpair( '{', '', '}',  'rnmW', s:skip_sc)
+        if !(b1 == b2) && !(b1 == b2 - 1 && line[c-1] == '{') && !(b1 == b2 + 1 && line[c-1] == '}')
+            " Number of opening and closing curly braces differ
+            return 0
+        endif
+    endif
+    return 1
 endfunction
