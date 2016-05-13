@@ -206,3 +206,5 @@ function! s:IsBalanced()
     endif
     return 1
 endfunction
+
+au FileType *clojure* call PareditInitBuffer()
