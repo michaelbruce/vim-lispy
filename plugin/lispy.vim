@@ -207,4 +207,4 @@ function! s:IsBalanced()
     return 1
 endfunction
 
-au FileType *clojure* call PareditInitBuffer()
+au FileType *clojure* call LispyInitBuffer()
