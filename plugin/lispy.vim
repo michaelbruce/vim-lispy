@@ -73,12 +73,8 @@ function! LispyNextLineSplit()
     let cut_column = col( '.' ) - 1
 endfunction
 
-" function! Kick()
-"   ft)x$p
-" endfunction
-
-function! TestKick()
-  normal ixxx
+function! Kick()
+  normal f)x$p
 endfunction
 
 " === Implicit Editing behaviour -----------------------------------------------------
