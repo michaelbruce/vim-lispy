@@ -1,7 +1,16 @@
 Include: include/setup.vader
 
-Do (Send next paren to the end of s-exp):
+Do (Send next paren to the end of s-exp (single line)):
   i(defn new [x] (+ 4 2) 5 2)\<Esc>F+:call Kick()\<CR>
 
 Expect (paren to the right is kicked to the end of s-exp):
   (defn new [x] (+ 4 2 5 2))
+
+Do (Send next paren to the end of s-exp (multi line)):
+  i(defn new [x]\<CR>  (+ 4 2 5 2)\<CR>(- 3 2))\<Esc>?+\<CR>:call Kick()\<CR>
+
+Expect (paren to the right is kicked to the end of s-exp):
+  (defn new [x]
+    (+ 4 2 5 2
+    (- 3 2)))
+
