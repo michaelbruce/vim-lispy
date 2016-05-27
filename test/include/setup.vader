@@ -1,5 +1,6 @@
 Execute (Clean up test environment):
   source ./plugin/lispy.vim
+  call LispyInitBuffer()
 
 Before:
 After:

@@ -1,0 +1,13 @@
+Include: include/setup.vader
+
+Do (Open a paren with ():
+  (
+
+Expect (A matching parenthesis to appear when ( is inserted):
+  ()
+
+Do(Add a closing paren ) to an already balanced s-exp):
+  ()
+
+Expect (The additional closing paren is not inserted):
+  ()
