@@ -73,6 +73,14 @@ function! LispyNextLineSplit()
     let cut_column = col( '.' ) - 1
 endfunction
 
+function! Kick()
+  ft)x$p
+endfunction
+
+function! TestKick()
+  exec 'iHELLO'
+endfunction
+
 " === Implicit Editing behaviour -----------------------------------------------------
 
 " Insert opening type of a paired character, like ( or [.
