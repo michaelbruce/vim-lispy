@@ -44,6 +44,7 @@ function! LispyInitBuffer ()
     " -- Keybindings
     " Implicit Editing behaviour
     inoremap <buffer> <expr>   (            PareditInsertOpening('(',')')
+    inoremap <buffer> <expr>   )            LispyCloseIfUnmatched(')')
     inoremap <buffer> <expr>   {            PareditInsertOpening('{','}')
     inoremap <buffer> <expr>   [            PareditInsertOpening('[',']')
     inoremap <buffer> <expr>   "            PareditInsertOpening('"','"')
@@ -74,11 +75,7 @@ function! LispyNextLineSplit()
 endfunction
 
 function! Kick()
-  ft)x$p
-endfunction
-
-function! TestKick()
-  exec 'iHELLO'
+  normal f)x$p
 endfunction
 
 " === Implicit Editing behaviour -----------------------------------------------------
@@ -104,6 +101,18 @@ function! PareditInsertOpening( open, close )
         let retval = " " . retval
     endif
     return retval
+endfunction
+
+" TODO if in function name signals refactoring
+function! LispyCloseIfUnmatched( close )
+    let line = getline( '.' )
+    let pos = col( '.' ) - 1
+    " TODO work for parens first, then generalise
+    if line[pos-1] == '('
+        return ""
+    else
+        return line[pos]
+    end
 endfunction
 
 " Handle <BS> keypress

@@ -1,0 +1,13 @@
+Include: include/setup.vader
+
+Do (When inserting a parenthesis):
+  i(\<Esc>
+
+Expect (A closing parenthesis is inserted):
+  ()
+
+Do(Attempt to insert a closing parenthesis for an already balanced set):
+  i()\<Esc>
+
+Expect (The additional closing paren is not inserted):
+  ()
