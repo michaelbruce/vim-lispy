@@ -2,6 +2,14 @@
 " Author:       Michael Bruce <http://focalpointer.org/>
 " Version:      0.1
 " " map <Leader>5 :unlet g:loaded_alternator<CR>:so %<CR>:echo 'Reloaded!'<CR>
+"
+" PROGRESS
+" - TODO Balanced pairs, only () is handles for closing, nearly there though
+" - TODO Wrap round, accomplished by vim-surround, custom keybinding for this?w
+" - TODO protip, look at rainbow parens to see how context can be programmed "   here
+" - TODO deleting, M-d done, paredit-kill & C-w being implemented
+" - TODO slurping, expanding the current sexp to accomodate neighbouring code
+" - TODO barfing, contracting the current sexp by spitting out code at the  edge
 
 " TODO list balancing
 "   - TODO checking whole project is balanced
@@ -56,7 +64,8 @@ function! LispyInitBuffer ()
     " F[...
     inoremap <C-d>        <C-o>x
     inoremap <C-k>        <C-o>F(<BS><CR><C-o>%
-    noremap <BS> RainbowParenthesis!!
+    " TODO BS mapping does not work as intended
+    noremap <BS> :RainbowParenthesis!!
     " inoremap <C-F>        <C-o>k " slurp/barfing
     " splicing achieved with ds(/dsb
     " wrap entire line with yssb
@@ -108,11 +117,16 @@ function! LispyCloseIfUnmatched( close )
     let line = getline( '.' )
     let pos = col( '.' ) - 1
     " TODO work for parens first, then generalise
-    if line[pos-1] == '('
-        return ""
+    if line[pos] == ')'
+        return "\<C-o>a"
     else
-        return line[pos]
+        return ")"
     end
+endfunction
+
+" TODO needs testing
+function! LispyKill()
+    normal dt)
 endfunction
 
 " Handle <BS> keypress
