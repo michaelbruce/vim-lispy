@@ -1,5 +1,11 @@
-# Include: include/setup.vader
-# 
+Include: include/setup.vader
+
+Do (Slurp something-to-slurp into sexp):
+  i(dolist (something) something-to-slurp)\<Esc>F(:call SlurpRight()\<CR>
+
+Expect (something-to-slurp is in the same sexp as something):
+  (dolist (something something-to-slurp))
+
 # Do (Send next paren to the end of s-exp (single line)):
 #   i(defn new [x\<Esc>2li(+ 4 2) 5 2)\<Esc>\<Esc>?+\<CR>:call Kick()\<CR>
 # 

@@ -129,6 +129,10 @@ function! LispyKill()
     normal dt)
 endfunction
 
+function! SlurpRight()
+    normal f)x/ \|\)\<CR>0ifsaoijp
+endfunction
+
 " Handle <BS> keypress
 function! PareditBackspace( repl_mode )
     " let [lp, cp] = s:GetReplPromptPos()
