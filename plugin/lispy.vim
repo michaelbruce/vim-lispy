@@ -62,6 +62,9 @@ function! LispyInitBuffer ()
     inoremap <C-b>        <C-o>h
     " F( should be replaced with a backward search for any open/closing list
     " F[...
+    set <M-k>=k
+    imap <M-k> <C-o>:call SlurpRight()<CR>
+    map <M-k> :call SlurpRight()<CR>
     inoremap <C-d>        <C-o>x
     inoremap <C-k>        <C-o>F(<BS><CR><C-o>%
     " TODO BS mapping does not work as intended
