@@ -130,7 +130,14 @@ function! LispyKill()
 endfunction
 
 function! SlurpRight()
-    normal f)x/ \|\)\<CR>0ifsaoijp
+    normal f)"yx
+    " you will likely need a conditional to check that a paren is not already
+    " side by side to another before searching. )) will stay as ))
+    normal / \|)
+    normal "yp
+endfunction
+
+function! BarfRight()
 endfunction
 
 " Handle <BS> keypress

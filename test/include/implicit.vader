@@ -1,0 +1,7 @@
+Execute (Make current buffer lispy):
+  source ./plugin/lispy.vim
+  call LispyInitBuffer()
+
+Before:
+After:
+Given:
