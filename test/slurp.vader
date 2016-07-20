@@ -6,6 +6,15 @@ Do (Slurp something-to-slurp into sexp):
 Expect (something-to-slurp is in the same sexp as something):
   (dolist (something something-to-slurp))
 
+Given (A s-exp):
+  (top (mid level things) end of the line)
+
+Do (SlurpRight when the cursor is over a closing paren):
+  $F):call SlurpRight()\<CR>
+
+Expect (Current s-exp has right element slurped into it):
+  (top (mid level things end) of the line)
+
 # Do (Send next paren to the end of s-exp (single line)):
 #   i(defn new [x\<Esc>2li(+ 4 2) 5 2)\<Esc>\<Esc>?+\<CR>:call Kick()\<CR>
 # 

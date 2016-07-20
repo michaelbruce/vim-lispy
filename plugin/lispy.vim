@@ -132,12 +132,19 @@ function! LispyKill()
     normal dt)
 endfunction
 
+function! s:letter_under_cursor()
+    return matchstr(getline('.'), '\%' . col('.') . 'c.')
+endfunction
+
 function! SlurpRight()
-    normal f)"yx
+    if s:letter_under_cursor() != ')'
+        normal f)
+    endif
+    normal "yx
     " you will likely need a conditional to check that a paren is not already
     " side by side to another before searching. )) will stay as ))
     normal / \|)
-    normal "yp
+    normal "yP
 endfunction
 
 function! BarfRight()
