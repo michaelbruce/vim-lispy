@@ -1,16 +1,10 @@
-(+ 40 2)
 
-(def a-value "IKR!")
+        Lispy - main help file
 
-(defn task [n]
-  {:new "thing"
-   :other "thing"})
+    Left sided
+        Slurping: <M-j> (:call SlurpLeft())
+        Barfing: <M-h> (:call BarfLeft())
 
-"hello"
-
-(defn task [n]
-  (println) "what's going on here?")
-
-(def main-data {})
-
-(map #(println %) (seq main-data))
+    Right sided
+        Slurping: <M-k> (:call SlurpRight())
+        Barfing: <M-l> (:call BarfRight())
