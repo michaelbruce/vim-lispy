@@ -1,0 +1,4 @@
+Include: include/setup.vader
+
+Do (Kick bracket to the end of entire sexp):
+  i(dolist (something) something-to-slurp)\<Esc>F(:call SlurpRight()\<CR>

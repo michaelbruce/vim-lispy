@@ -1,4 +1,6 @@
+*lispy.txt*                   Lispy                 Last Change 26 Aug 2016
 
+===========================================================================
         Lispy - main help file
 
     Left sided
@@ -8,3 +10,5 @@
     Right sided
         Slurping: <M-k> (:call SlurpRight())
         Barfing: <M-l> (:call BarfRight())
+
+        <M-;> :call Kick()

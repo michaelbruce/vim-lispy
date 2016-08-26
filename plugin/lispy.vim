@@ -65,6 +65,9 @@ function! LispyInitBuffer ()
     set <M-k>=k
     imap <M-k> <C-o>:call SlurpRight()<CR>
     map <M-k> :call SlurpRight()<CR>
+    " TODO find a suitable binding for Kick that actually works
+    " imap <C-k> <C-o>:call Kick()<CR>
+    " map <C-k> :call Kick()<CR>
     inoremap <C-d>        <C-o>x
     inoremap <C-k>        <C-o>F(<BS><CR><C-o>%
     " TODO BS mapping does not work as intended
