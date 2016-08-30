@@ -12,3 +12,5 @@
         Barfing: <M-l> (:call BarfRight())
 
         <M-;> :call Kick()
+
+        <C-y> - split line before current word

@@ -10,6 +10,7 @@
 " - TODO deleting, M-d done, paredit-kill & C-w being implemented
 " - TODO slurping, expanding the current sexp to accomodate neighbouring code
 " - TODO barfing, contracting the current sexp by spitting out code at the  edge
+" - TODO ] shouldn't repeat ], just skip over like )
 
 " TODO list balancing
 "   - TODO checking whole project is balanced
@@ -65,9 +66,7 @@ function! LispyInitBuffer ()
     set <M-k>=k
     imap <M-k> <C-o>:call SlurpRight()<CR>
     map <M-k> :call SlurpRight()<CR>
-    " TODO find a suitable binding for Kick that actually works
-    " imap <C-k> <C-o>:call Kick()<CR>
-    " map <C-k> :call Kick()<CR>
+    map _ :call Kick()<CR>
     inoremap <C-d>        <C-o>x
     inoremap <C-k>        <C-o>F(<BS><CR><C-o>%
     " TODO BS mapping does not work as intended
@@ -90,7 +89,8 @@ function! LispyNextLineSplit()
 endfunction
 
 function! Kick()
-  normal f)x$p
+    " normal mehf)"dx$<esc>"dp`e
+    echo 'hello'
 endfunction
 
 " === Implicit Editing behaviour -----------------------------------------------------
@@ -263,3 +263,26 @@ function! s:IsBalanced()
 endfunction
 
 au FileType *clojure* call LispyInitBuffer()
+
+function! BreakCurrentWord()
+    normal gElrx==
+endfunction
+
+map gh mevip:Eval`e
+
+" TODO slows down d mappings, how do you solve this? look up cpp definition in
+" vim-fireplace
+onoremap j :call BreakCurrentWord()<CR>
+map <C-y> :call BreakCurrentWord()<CR>
+
+function! MoveToNextElement()
+    normal /[\|(\|{
+endfunction
+
+" TODO should work for (, [ and {
+function! MoveToPreviousElement()
+    normal ?[\|(\|{
+endfunction
+
+map W :call MoveToNextElement()<CR>
+map B :call MoveToNextElement()<CR>
