@@ -14,3 +14,10 @@
         <M-;> :call Kick()
 
         <C-y> - split line before current word
+
+    Evaluation
+        gh - evaluate current sexp block
+
+        e.g whole def here is evaluated when cursor is inside it's containing map
+        (def new-method
+         {:a "one"| :b "two"})
